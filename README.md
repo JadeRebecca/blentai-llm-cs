@@ -1,9 +1,9 @@
 # LLM SQL Bot - Service Client E-commerce
 
 ## Objectif
-Ce projet implémente un assistant capable de répondre à des questions sur des commandes clients à partir d'une base SQLite (`orders.db`), avec des garde-fous de sécurité.
+Ce projet implémente un assistant capable de répondre à des questions sur des commandes clients à partir d'une base SQLite (`data/orders.db`), avec des garde-fous de sécurité.
 
-Le flux principal est dans [llm-sql.ipynb](/Users/jadedupont/projects/blentAI/llm/projets-hands-on/blentai-llm-cs/llm-sql.ipynb).
+Le flux principal est dans [llm-sql.ipynb](./llm-sql.ipynb).
 
 ## Architecture fonctionnelle
 1. Routage sémantique de la demande utilisateur:
@@ -28,7 +28,7 @@ Le flux principal est dans [llm-sql.ipynb](/Users/jadedupont/projects/blentAI/ll
 5. Exécution SQL puis reformulation de la réponse.
 
 ## Sécurité
-La fonction [security.py](/Users/jadedupont/projects/blentAI/llm/projets-hands-on/blentai-llm-cs/security.py) applique notamment:
+La fonction [helpers/security.py](./helpers/security.py) applique notamment:
 - rejet si la requête n'est pas un `SELECT`.
 - rejet si `WHERE` absent.
 - rejet de patterns à risque (`OR`, `UNION`, `--`, `/* */`, `;`).
@@ -37,7 +37,7 @@ La fonction [security.py](/Users/jadedupont/projects/blentAI/llm/projets-hands-o
 
 ## Tests
 ### 1. Tests unitaires sécurité
-Fichier: [tests/test_security.py](/Users/jadedupont/projects/blentAI/llm/projets-hands-on/blentai-llm-cs/tests/test_security.py)
+Fichier: [tests/test_security.py](./tests/test_security.py)
 
 Couvre:
 - cas valides (`user_id` simple et avec alias),
@@ -45,7 +45,7 @@ Couvre:
 - tentatives d'injection (`OR`, `UNION`, commentaires, multi-statements).
 
 ### 2. Tests d'intégration du flux
-Fichier: [tests/test_run_query.py](/Users/jadedupont/projects/blentAI/llm/projets-hands-on/blentai-llm-cs/tests/test_run_query.py)
+Fichier: [tests/test_run_query.py](./tests/test_run_query.py)
 
 Couvre:
 - routage `order_help` vers humain sans SQL,
@@ -58,7 +58,6 @@ Couvre:
 PYTHONPATH=. pytest -q
 ```
 
-## Données
-- Base SQLite: `orders.db`
-- Exports CSV: `users.csv`, `orders.csv`
-
+## Données (data folder)
+- Base SQLite: `data/orders.db`
+- Exports CSV: `data/users.csv`, `data/orders.csv`

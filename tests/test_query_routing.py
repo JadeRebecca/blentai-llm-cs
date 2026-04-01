@@ -1,4 +1,4 @@
-from query_routing import (
+from helpers.query_routing import (
     classify_query_from_scores,
     classify_user_query,
 )

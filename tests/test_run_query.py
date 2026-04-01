@@ -2,7 +2,7 @@ import json
 import sqlite3
 from pathlib import Path
 
-from security import is_valid_user_sql_query
+from helpers.security import is_valid_user_sql_query
 
 
 def _load_run_query_source() -> str:

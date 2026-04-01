@@ -1,6 +1,6 @@
 import sys
 import os
-from security import is_valid_user_sql_query
+from helpers.security import is_valid_user_sql_query
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 def test_valid_filter_simple():

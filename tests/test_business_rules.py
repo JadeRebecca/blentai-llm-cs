@@ -1,4 +1,4 @@
-from business_rules import (
+from helpers.business_rules import (
     forced_message_delivered_without_date,
     forced_message_invoiced_not_shipped,
     forced_message_shipped_not_delivered,
