@@ -1,9 +1,9 @@
 # LLM SQL Bot - Service Client E-commerce
 
 ## Objectif
-Ce projet implémente un assistant capable de répondre à des questions sur des commandes clients à partir d'une base SQLite (`orders.db`), avec des garde-fous de sécurité.
+Ce projet implémente un assistant capable de répondre à des questions sur des commandes clients à partir d'une base SQLite (`data/orders.db`), avec des garde-fous de sécurité.
 
-Le flux principal est dans [llm-sql.ipynb](/Users/jadedupont/projects/blentAI/llm/projets-hands-on/blentai-llm-cs/llm-sql.ipynb).
+Le flux principal est dans [llm-sql.ipynb](./llm-sql.ipynb).
 
 ## Architecture fonctionnelle
 1. Routage sémantique de la demande utilisateur:
@@ -28,7 +28,7 @@ Le flux principal est dans [llm-sql.ipynb](/Users/jadedupont/projects/blentAI/ll
 5. Exécution SQL puis reformulation de la réponse.
 
 ## Sécurité
-La fonction [security.py](/Users/jadedupont/projects/blentAI/llm/projets-hands-on/blentai-llm-cs/security.py) applique notamment:
+La fonction [helpers/security.py](./helpers/security.py) applique notamment:
 - rejet si la requête n'est pas un `SELECT`.
 - rejet si `WHERE` absent.
 - rejet de patterns à risque (`OR`, `UNION`, `--`, `/* */`, `;`).
@@ -37,28 +37,54 @@ La fonction [security.py](/Users/jadedupont/projects/blentAI/llm/projets-hands-o
 
 ## Tests
 ### 1. Tests unitaires sécurité
-Fichier: [tests/test_security.py](/Users/jadedupont/projects/blentAI/llm/projets-hands-on/blentai-llm-cs/tests/test_security.py)
+Fichier: [tests/test_security.py](./tests/test_security.py)
 
 Couvre:
 - cas valides (`user_id` simple et avec alias),
 - erreurs de filtre (`WHERE` absent, mauvais `user_id`),
 - tentatives d'injection (`OR`, `UNION`, commentaires, multi-statements).
 
-### 2. Tests d'intégration du flux
-Fichier: [tests/test_run_query.py](/Users/jadedupont/projects/blentAI/llm/projets-hands-on/blentai-llm-cs/tests/test_run_query.py)
+### 2. Tests unitaires routage
+Fichier: [tests/test_query_routing.py](./tests/test_query_routing.py)
+
+Couvre:
+- choix de la meilleure route lorsque le score est clair,
+- rejet en `out_of_scope` lorsque le score est trop faible,
+- rejet en `out_of_scope` lorsque la classification est ambiguë,
+- calcul des scores à partir d'un encodeur et d'une fonction de similarité.
+
+### 3. Tests unitaires règles métier
+Fichier: [tests/test_business_rules.py](./tests/test_business_rules.py)
+
+Couvre:
+- enrichissement des requêtes SQL avec les colonnes nécessaires à la réponse métier,
+- normalisation de filtres de statut invalides générés par le LLM,
+- réponses forcées pour les cas livraison, paiement et statut de commande,
+- gestion des informations de livraison incomplètes.
+
+### 4. Tests d'intégration du flux
+Fichier: [tests/test_run_query.py](./tests/test_run_query.py)
 
 Couvre:
 - routage `order_help` vers humain sans SQL,
-- scénario `order_info` de bout en bout,
+- scénario `order_info` du pipeline orchestré avec composants mockés,
 - identité invalide,
-- blocage d'une requête SQL injectée avant exécution.
+- blocage d'une requête SQL injectée avant exécution,
+- nettoyage d'une requête SQL générée avec point-virgule final,
+- retour explicite lorsqu'aucune commande ne correspond à la demande.
+
+Les tests automatisés ne chargent pas les vrais modèles LLM. Le flux réel avec le modèle de génération et le modèle d'embedding est présenté dans le notebook [llm-sql.ipynb](./llm-sql.ipynb).
+
+## Installation
+```bash
+pip install -r requirements.txt
+```
 
 ## Exécuter les tests
 ```bash
 PYTHONPATH=. pytest -q
 ```
 
-## Données
-- Base SQLite: `orders.db`
-- Exports CSV: `users.csv`, `orders.csv`
-
+## Données (data folder)
+- Base SQLite: `data/orders.db`
+- Exports CSV: `data/users.csv`, `data/orders.csv`
